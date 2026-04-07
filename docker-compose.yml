@@ -1,28 +1,56 @@
-version: "3.9"
-
 services:
   app:
     build: .
     container_name: doctor_app
-    ports:
-      - "3008:3008"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    expose:
+      - "3008"
+
     env_file:
       - .env
-    depends_on:
-      - db
+
+    environment:
+      - VIRTUAL_HOST=midl.automedai.in
+      - LETSENCRYPT_HOST=midl.automedai.in
+      - LETSENCRYPT_EMAIL=tech@automedai.in
+      - VIRTUAL_PORT=3008
+
     restart: always
+
+    networks:
+      - default
+      - proxy-network
 
   db:
     image: mysql:8
-    container_name: doctor_db
+    container_name: queue_db
     restart: always
+
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: doctor_db
+      MYSQL_DATABASE: queue_db
+
     ports:
-      - "3307:3306"
+      - "3311:3306"
+
     volumes:
       - db_data:/var/lib/mysql
 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   db_data:
+
+networks:
+  default:
+  proxy-network:
+    external: true
+    name: fm-global-frontend-network
