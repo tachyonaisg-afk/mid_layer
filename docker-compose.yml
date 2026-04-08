@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    container_name: doctor_app
+    container_name: doctor_app_staging   # ✅ change name
 
     depends_on:
       db:
@@ -14,8 +14,8 @@ services:
       - .env
 
     environment:
-      - VIRTUAL_HOST=midl.automedai.in
-      - LETSENCRYPT_HOST=midl.automedai.in
+      - VIRTUAL_HOST=stgm.automedai.in   # ✅ staging domain
+      - LETSENCRYPT_HOST=stgm.automedai.in
       - LETSENCRYPT_EMAIL=tech@automedai.in
       - VIRTUAL_PORT=3008
 
@@ -27,18 +27,18 @@ services:
 
   db:
     image: mysql:8
-    container_name: queue_db
+    container_name: queue_db_staging   # ✅ change name
     restart: always
 
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: queue_db
+      MYSQL_DATABASE: queue_db_staging   # ✅ MUST match .env
 
     ports:
-      - "3311:3306"
+      - "3312:3306"   # ✅ different from production (3311)
 
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data_staging:/var/lib/mysql   # ✅ separate volume
 
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -47,7 +47,7 @@ services:
       retries: 5
 
 volumes:
-  db_data:
+  db_data_staging:
 
 networks:
   default:
