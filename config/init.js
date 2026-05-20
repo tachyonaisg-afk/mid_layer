@@ -8,6 +8,7 @@ const doctorAvailabilityTable = require('../model/doctorAvailability.model');
 const doctorAvailableTable = require('../model/doctorAvailable.model');
 const doctorCompanyTable = require('../model/doctorCompany.model');
 const prescriptionTable = require('../model/prescription.model');
+const paymentTable = require('../model/payment.model');
 
 
 async function initDB() {
@@ -15,7 +16,7 @@ async function initDB() {
     try {
         await conn.beginTransaction();
 
-       
+
         await conn.query(appointmentTable);
         await conn.query(roomTable);
         await conn.query(doctorRoomTable);
@@ -23,6 +24,10 @@ async function initDB() {
         await conn.query(doctorAvailableTable);
         await conn.query(doctorCompanyTable);
         await conn.query(prescriptionTable);
+        await conn.query(paymentTable);
+        
+
+        
         await conn.commit();
         console.log("Database tables ready");
     } catch (err) {
